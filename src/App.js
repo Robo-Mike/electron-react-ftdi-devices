@@ -2,9 +2,8 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {Container,Grid,Row,Col, ListGroup} from 'react-bootstrap';
-
-const DEVICEINFOS = [{serialNo: 92000013, description: 'Integrated Precision Piezo Motor', productCode: 'CT1'}, {serialNo: 101000012, description: 'Integrated X Y Stage', productCode: 'MXY30'}]
-const DEVICE = {serialNo: 92000013, description: 'Integrated Precision Piezo Motor', productCode: 'CT1', currentPosition: '0.5'}
+import {onDeviceInfoListItemClicked, onDeviceInfoListMounted} from './actions/index.js';
+import { connect } from 'react-redux'
 
 function App() {
   return (
@@ -12,20 +11,24 @@ function App() {
       <div class='page-header'>
       <h1>FTDI Device Demo</h1>
       </div>
-      <Container >
-        <Row>
-          <Col xs={3} ><DeviceInfoList deviceInfos={DEVICEINFOS} /></Col>
-          <Col xs={9} ><DeviceView device={DEVICE} /></Col>
-        </Row>
-      </Container>
+      <DeviceViewer />
     </div>
   );
 }
 
+const DeviceViewer = ({ deviceInfos, device, onDeviceInfoListMounted, onDeviceInfoListItemClicked}) =>
+<Container >
+  <Row>
+    <Col xs={3} ><DeviceInfoList deviceInfos={deviceInfos,onDeviceInfoListMounted,onDeviceInfoListItemClicked} /></Col>
+    <Col xs={9} ><DeviceView device={device} /></Col>
+  </Row>
+</Container>
+
+
+
+
 //Es6 does an implicit return if no block statemnt
 const  DeviceView = ({device}) =>
-
-
   <Container className='rounded bg-info text-white border ' >
     <Row  >
     <Col ><h3>{device.description} ({device.productCode}) - s/n {device.serialNo}</h3></Col>
@@ -54,7 +57,7 @@ const  DeviceView = ({device}) =>
 
 
 
-const DeviceInfoList = ({deviceInfos, selectedSerialNo}) =>
+const DeviceInfoList = ({deviceInfos, selectedSerialNo, onDeviceInfoListItemClicked, onDeviceInfoListMounted}) =>
       <ListGroup class='text-left'>
       {deviceInfos.map((item,key)=>
         <ListGroup.Item active={selectedSerialNo==item.serialNo} ><DeviceInfoItem deviceInfo={item}  /></ListGroup.Item>
@@ -66,5 +69,26 @@ const DeviceInfoItem = ({deviceInfo}) =>
       <span>Serial No : {deviceInfo.serialNo}<br/>
       Description : {deviceInfo.description}<br/><br/></span>
 
+
+
+//todo seperate outin own file
+const mapStateToDeviceInfoListProps = state => ({
+        deviceInfos: state.deviceInfos,
+        selectedSerialNo: state.selectedSerialNo,
+      })
+
+const mapStateToDeviceProps = state => ({
+        device: state.device
+      })
+//todo will need to add the
+
+export default connect(
+  mapStateToDeviceInfoListProps ,
+  {onDeviceInfoListItemClicked:onDeviceInfoListItemClicked, onDeviceInfoListMounted:onDeviceInfoListMounted}
+)(DeviceInfoList)
+
+export default connect(
+  mapStateToDeviceProps
+)(DeviceView)
 
 export default App;
