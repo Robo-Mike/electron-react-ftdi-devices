@@ -1,10 +1,7 @@
 import { combineReducers } from 'redux'
 import * as types from "../constants/actiontypes.js"
 
-export default combineReducers({
-  deviceReducer,
-  deviceInfoListReducer
-})
+
 
 const initialDeviceState = {serialNo: 0, description: '0', productCode: '', currentPosition: '', connected: false, targetPosition:0}
 //DEVICE STATE reducer
@@ -12,13 +9,13 @@ const initialDeviceState = {serialNo: 0, description: '0', productCode: '', curr
 const deviceReducer = (state = initialDeviceState, action) => {
   switch(action.type)
   {
-    case DEVICE_CONNECTED:
+    case types.DEVICE_CONNECTED:
         return action.device
-    case RECEIVED_DEVICE_STATUS:
+    case types.RECEIVED_DEVICE_STATUS:
         return {...state, currentPosition : action.currentPosition }
-    case SET_DEVICE_POSITION:
+    case types.SET_DEVICE_POSITION:
         return {...state, targetPosition : action.targetPosition }
-    case SELECTING_DEVICE:
+    case types.SELECTING_DEVICE:
         return initialDeviceState
     // undefined initializes state
     default:
@@ -28,19 +25,22 @@ const deviceReducer = (state = initialDeviceState, action) => {
 
 const initialDeviceInfoListState = { deviceInfos:[],selectedSerialNo:0 }
 
-const deviceInfoListReducer = (state = { []}, action) => {
+const deviceInfoListReducer = (state = initialDeviceInfoListState, action ) => {
   switch(action.type)
   {
-    case GETTING_DEVICES:
+    case types.GETTING_DEVICE_INFOS:
         return initialDeviceInfoListState
-    case RECEIVED_DEVICES:
+    case types.RECEIVED_DEVICE_INFOS:
         return {...state, deviceInfos : action.deviceInfos}
     default:
             return state
   }
 
 }
-
+export default combineReducers({
+  deviceReducer,
+  deviceInfoListReducer
+})
 
 
 

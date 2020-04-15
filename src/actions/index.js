@@ -4,40 +4,40 @@ import {getDeviceInfoList, openDevice} from '../services/index.js'
 //action creator bindings
 
 const createGettingDeviceInfos = ()=> {
-  return {type : types.GETTING_DEVICEINFOS}
+  return {type : types.GETTING_DEVICE_INFOS}
 }
 
 const createReceivedDeviceInfos = (deviceInfos) => {
   return {
-    type: types.RECEIVED_DEVICES
+    type: types.RECEIVED_DEVICE_INFOS,
     deviceInfos: deviceInfos
   }
 }
 
 const createSelectingDevice = (serialNo)=> {
   return {
-    type: types.SELECTING_DEVICE
+    type: types.SELECTING_DEVICE,
     serialNo: serialNo
   }
 }
 
 const createDeviceConnected = (device)=> {
   return {
-    type: types.DEVICE_CONNECTED
+    type: types.DEVICE_CONNECTED,
     device: device
   }
 }
 
 const createReceivedDeviceStatus = (currentPosition)=> {
   return {
-    type: types.RECEIVED_DEVICE_STATUS
+    type: types.RECEIVED_DEVICE_STATUS,
     currentPosition : currentPosition
   }
 }
 
 const createSetDevicePosition= (targetPosition)=> {
   return {
-    type: types.SET_DEVICE_POSITION
+    type: types.SET_DEVICE_POSITION,
     targetPosition : targetPosition
   }
 }
@@ -58,6 +58,6 @@ export const onDeviceInfoListMounted = () => {
   return dispatch => {
     dispatch(createGettingDeviceInfos())
     getDeviceInfoList()
-    .then(deviceinfos => {dispatch(createReceivedDeviceInfos(deviceInfos))}, obj = > {/*todo getdeviceinfos error*/})
+    .then(deviceInfos => {dispatch(createReceivedDeviceInfos(deviceInfos))}, obj => {/*todo getdeviceinfos error*/})
   }
 }

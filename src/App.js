@@ -1,7 +1,6 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect} from 'react';
 import './App.css';
-import {Container,Grid,Row,Col, ListGroup} from 'react-bootstrap';
+import {Container,Row,Col, ListGroup} from 'react-bootstrap';
 import {onDeviceInfoListItemClicked, onDeviceInfoListMounted} from './actions/index.js';
 import { connect } from 'react-redux'
 
@@ -16,11 +15,11 @@ function App() {
   );
 }
 
-const DeviceViewer = ({ deviceInfos, device, onDeviceInfoListMounted, onDeviceInfoListItemClicked}) =>
+const DeviceViewer = () =>
 <Container >
   <Row>
-    <Col xs={3} ><DeviceInfoList deviceInfos={deviceInfos,onDeviceInfoListMounted,onDeviceInfoListItemClicked} /></Col>
-    <Col xs={9} ><DeviceView device={device} /></Col>
+    <Col xs={3} ><DeviceInfoList  /></Col>
+    <Col xs={9} ><DeviceView  /></Col>
   </Row>
 </Container>
 
@@ -55,19 +54,24 @@ const  DeviceView = ({device}) =>
     </Row>
 </Container>
 
+const DeviceInfoList = ({deviceInfos, selectedSerialNo, onListMounted, onItemClicked}) =>
+  {
+
+    // Similar to componentDidMount and componentDidUpdate:
+    useEffect(onListMounted)
+    return <ListGroup class='text-left'>
+          {deviceInfos.map((item,key)=>
+            <ListGroup.Item active={selectedSerialNo===item.serialNo} ><DeviceInfoItem deviceInfo={item} onItemClicked={onItemClicked} /></ListGroup.Item>
+           )}
+          </ListGroup>
+  }
 
 
-const DeviceInfoList = ({deviceInfos, selectedSerialNo, onDeviceInfoListItemClicked, onDeviceInfoListMounted}) =>
-      <ListGroup class='text-left'>
-      {deviceInfos.map((item,key)=>
-        <ListGroup.Item active={selectedSerialNo==item.serialNo} ><DeviceInfoItem deviceInfo={item}  /></ListGroup.Item>
-       )}
-      </ListGroup>
 
-
-const DeviceInfoItem = ({deviceInfo}) =>
-      <span>Serial No : {deviceInfo.serialNo}<br/>
-      Description : {deviceInfo.description}<br/><br/></span>
+const DeviceInfoItem = ({deviceInfo, onItemClicked}) =>
+      <span onClick={onItemClicked(deviceInfo.serialNo)}  >Serial No : {deviceInfo.serialNo}<br/>
+      Description : {deviceInfo.description}<br/>
+      <br/><br/></span>
 
 
 
@@ -80,14 +84,17 @@ const mapStateToDeviceInfoListProps = state => ({
 const mapStateToDeviceProps = state => ({
         device: state.device
       })
+
+
+
 //todo will need to add the
 
-export default connect(
+connect(
   mapStateToDeviceInfoListProps ,
-  {onDeviceInfoListItemClicked:onDeviceInfoListItemClicked, onDeviceInfoListMounted:onDeviceInfoListMounted}
+  {onItemClicked:onDeviceInfoListItemClicked, onListMounted:onDeviceInfoListMounted}
 )(DeviceInfoList)
 
-export default connect(
+ connect(
   mapStateToDeviceProps
 )(DeviceView)
 

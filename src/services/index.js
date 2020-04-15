@@ -11,10 +11,9 @@ export const getDeviceInfoList = () => {
 
 export const openDevice = (serialNo) => {
   /*fake taking sometime and make non blockng with settimeout*/
-  const openedDevice = DeviceInfoListData.filter(device => device.serialNo == serialNo )[0]
+  const openedDevice = DeviceInfoListData.filter(device => device.serialNo === serialNo )[0]
 
   return new Promise((success, failure) => {
-    device
     setTimeout( ()=> { success( {...openedDevice, currentPosition : 5.0, connected : true, targetPosition : 0 } ) } ,500)
   } )
 
