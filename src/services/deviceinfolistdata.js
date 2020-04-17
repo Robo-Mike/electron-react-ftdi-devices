@@ -1,0 +1,2 @@
+export var Data =  [{serialNo: 92000013, description: 'Integrated Precision Piezo Motor', productCode: 'CT1'},
+  {serialNo: 101000012, description: 'Integrated X Y Stage', productCode: 'MXY30'}]
