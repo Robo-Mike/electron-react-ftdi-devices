@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import { ListGroup} from 'react-bootstrap';
 import {onDeviceInfoListItemClicked, onDeviceInfoListMounted} from '../../actions/index.js';
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 //NOTE using Destructuring curly brackets to extract releveant properties from parent object
 //connect and mapstatetoprops as written wouldnt work without this (or alternatively replacing arguments with  redundant top level props object)
@@ -20,6 +21,16 @@ const DeviceList = ({deviceInfos, selectedSerialNo, onListMounted, onItemClicked
             }
       </ListGroup>
 }
+
+//Some type checking error is loged to console is property not supplied
+DeviceList.propTypes = {
+  deviceInfos:PropTypes.array.isRequired,
+  onListMounted: PropTypes.func.isRequired
+}
+
+
+
+
 
 const DeviceInfoItem = ({deviceInfo, onItemClicked}) =>
       <span onClick={()=>{onItemClicked(deviceInfo.serialNo)}}  >Serial No : {deviceInfo.serialNo}<br/>

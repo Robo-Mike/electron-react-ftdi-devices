@@ -4,6 +4,7 @@ import {Container,Row,Col} from 'react-bootstrap'
 import ConnectedDeviceForm from './components/device/form.js'
 import ConnectedDeviceList from './components/device/list.js'
 function App() {
+  console.log('App is using React version ' + React.version )
   return (
     <div className='App'>
       <div className='page-header'>

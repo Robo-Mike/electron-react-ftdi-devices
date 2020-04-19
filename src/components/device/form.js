@@ -2,6 +2,7 @@ import React from 'react';
 import {Container,Row,Col} from 'react-bootstrap';
 import { connect } from 'react-redux'
 
+
 const FullDeviceForm = ({device}) =>
 <div>
   <div>Selected seial no is {device.serialNo}</div>
@@ -51,6 +52,10 @@ const  DeviceForm = ({device}) =>
         </Col>
     </Row>
 </Container>
+
+
+
+
 
 const mapStateToProps = (state) => {
       console.log ('mapstatetodeviceprops called')
