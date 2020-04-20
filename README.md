@@ -15,7 +15,7 @@ You will also see any lint errors in the console.
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+MR - the test configuration was created based on this article https://medium.com/@compatt84/how-to-setup-unit-tests-with-create-react-app-mocha-and-visual-studio-code-mocha-side-bar-eb4f75d8de5a
 
 ### `npm run build`
 
