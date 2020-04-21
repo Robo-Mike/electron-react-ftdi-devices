@@ -1,14 +1,14 @@
 import React from 'react';
 import {Container,Row,Col} from 'react-bootstrap';
 import { connect } from 'react-redux'
+import {onSendToDevice,onTargetPositionChanged} from '../../actions/index.js';
 
-
-const FullDeviceForm = ({device}) =>
+const FullDeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMessage}) =>
 <div>
-  <EmptyDeviceForm device={device}  />
+  <EmptyDeviceForm device={device} onGoClicked={onGoClicked} onTargetPositionChanged={onTargetPositionChanged} statusMessage={statusMessage} />
 </div>
 
-const  EmptyDeviceForm = ({device}) =>   {
+const  EmptyDeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMessage}) =>   {
   const noDeviceMarkup = <div >No device selected</div>
   if (!device )
   {
@@ -19,13 +19,13 @@ const  EmptyDeviceForm = ({device}) =>   {
           return noDeviceMarkup
         }
         else{
-            return <DeviceForm device={device} />
+            return <DeviceForm device={device} onGoClicked={onGoClicked} onTargetPositionChanged={onTargetPositionChanged} statusMessage={statusMessage}/>
         }
   }
 }
 
 
-export const  DeviceForm = ({device}) =>
+export const  DeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMessage}) =>
 <Container className='rounded bg-info text-white border ' >
     <Row  >
     <Col ><h3>{device.description} ({device.productCode}) - s/n {device.serialNo}</h3></Col>
@@ -41,25 +41,28 @@ export const  DeviceForm = ({device}) =>
 
         <form>
           <div className='input-group'>
-          <input type='text' className='form-control'  id='targetPosition'  />
+          <input type='text' className='form-control' onChange={(e) => onTargetPositionChanged(e.target.value)}   />
           <span className='input-group-btn' >
-            <button className='btn btn-secondary' type='submit'>Go</button>
+            <button className='btn btn-secondary' onClick={(e)=>{e.preventDefault(); onGoClicked();}} >Go</button>
           </span>
           </div>
         </form>
 
         </Col>
     </Row>
+      <Row >Status:{statusMessage}
+      </Row>
 </Container>
 
 
 const mapStateToProps = (state) => {
       console.log ('mapstatetodeviceprops called')
       //Note object level introduced by combine reducers
-      return { device: state.deviceReducer}
+      return { device: state.deviceReducer.device, statusMessage: state.deviceReducer.statusMessage}
 }
 
 export const ConnectedDeviceForm =  connect(
-  mapStateToProps
+  mapStateToProps,
+  {onGoClicked:onSendToDevice,onTargetPositionChanged:onTargetPositionChanged}
 )(FullDeviceForm)
 //export default ConnectedDeviceForm

@@ -3,7 +3,7 @@ import * as types from "../constants/actiontypes.js"
 import {Data as DeviceInfoListData}  from '../services/deviceinfolistdata.js'
 
 
-const initialDeviceState = {serialNo: 0, description: '', productCode: '', currentPosition: '', connected: false, targetPosition:0}
+const initialDeviceState = {statusMessage:'not connected',device:{serialNo: 0, description: '', productCode: '', currentPosition: 0, connected: false, targetPosition:0}}
 //DEVICE STATE reducer
 
 const deviceReducer = (state = initialDeviceState, action) => {
@@ -12,11 +12,11 @@ const deviceReducer = (state = initialDeviceState, action) => {
   {
     case types.DEVICE_CONNECTED:
         //console.log('device reducer action device serial no is ' + action.device.serialNo)
-        return action.device
+        return { statusMessage: 'connected' , device:action.device}
     case types.RECEIVED_DEVICE_STATUS:
-        return {...state, currentPosition : action.currentPosition }
+        return { statusMessage: state.statusMessage ,device: {...state.device, currentPosition : action.currentPosition }}
     case types.SET_DEVICE_POSITION:
-        return {...state, targetPosition : action.targetPosition }
+      return { statusMessage: state.statusMessage ,device: {...state.device, targetPosition : action.targetPosition  }}
     case types.SELECTING_DEVICE:
         return initialDeviceState
     // undefined initializes state

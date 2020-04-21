@@ -35,10 +35,16 @@ const createReceivedDeviceStatus = (currentPosition)=> {
   }
 }
 
-const createSetDevicePosition= (targetPosition)=> {
+const createSetTargetPosition= (targetPosition)=> {
   return {
     type: types.SET_DEVICE_POSITION,
     targetPosition : targetPosition
+  }
+}
+
+const createSendToDevice= ()=> {
+  return {
+    type: types.SEND_TO_DEVICE
   }
 }
 //TODO services openDevice, getDeviceInfoList
@@ -49,9 +55,7 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
     dispatch(createSelectingDevice(serialNo))
     openDevice(serialNo)
     .then(device => {dispatch( createDeviceConnected(device))} , obj => {/*todo open device error*/} )
-
   }
-
 }
 
 export const onDeviceInfoListMounted = () => {
@@ -60,4 +64,21 @@ export const onDeviceInfoListMounted = () => {
     getDeviceInfoList()
     .then(deviceInfos => {dispatch(createReceivedDeviceInfos(deviceInfos))}, obj => {/*todo getdeviceinfos error*/})
   }
+}
+
+export const onTargetPositionChanged = (targetPosition) => {
+  return dispatch => {
+    dispatch(createSetTargetPosition(targetPosition))
+  }
+}
+
+export const onSendToDevice = (targetPosition) => {
+  return dispatch => {
+    dispatch(createSendToDevice(targetPosition))
+    //TODo send set message but dont wait for response
+    console.log("call set target here")
+  }
+
+
+
 }

@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
-import { ListGroup} from 'react-bootstrap';
-import {onDeviceInfoListItemClicked, onDeviceInfoListMounted} from '../../actions/index.js';
+import React, {useEffect} from 'react'
+import { ListGroup} from 'react-bootstrap'
+import {onDeviceInfoListItemClicked, onDeviceInfoListMounted} from '../../actions/index.js'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
