@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 
 const FullDeviceForm = ({device}) =>
 <div>
-  <div>Selected seial no is {device.serialNo}</div>
   <EmptyDeviceForm device={device}  />
 </div>
 
@@ -33,7 +32,7 @@ export const  DeviceForm = ({device}) =>
   </Row>
     <Row>
       <Col  className='text-right' xs={5} >Current Position</Col>
-      <Col className='text-left' xs={5} data-testid ="currentPosition" >{device.currentPosition}</Col>
+      <Col className='text-left' xs={5} data-testid="currentPosition" >{device.currentPosition}</Col>
     </Row>
     <Row className='form-group '>
       {/*Had to put outside of form to prevent horizontal stacking*/}
