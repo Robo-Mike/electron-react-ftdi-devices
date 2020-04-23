@@ -6,7 +6,7 @@ In the project directory, you can run:
 
 ### `npm start`
 
-Runs the app in development mode. node Foreman (nf) I is used to start 2 processe - the react app on the dev web server and the seperate electron process. This should make debugging easier. <br />
+Runs the app in development mode. node Foreman (nf) I is used to start 2 processes - the react app on the dev web server and the separate electron process. Running using the web browser makes debugging easier <br />
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
