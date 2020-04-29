@@ -58,13 +58,17 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
   }
 }
 
-export const onDeviceInfoListMounted = () => {
+export const refreshDeviceInfoList = () => {
+  console.log('Refresh device list called')
   return dispatch => {
     dispatch(createGettingDeviceInfos())
     getDeviceInfoList()
-    .then(deviceInfos => {dispatch(createReceivedDeviceInfos(deviceInfos))}, obj => {/*todo getdeviceinfos error*/})
+    .then(deviceInfos => {
+      dispatch(createReceivedDeviceInfos(deviceInfos))}, obj => {/*todo getdeviceinfos error*/})
   }
 }
+
+
 
 export const onTargetPositionChanged = (targetPosition) => {
   return dispatch => {

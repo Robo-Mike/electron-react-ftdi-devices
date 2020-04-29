@@ -1,15 +1,25 @@
 import React, {useEffect} from 'react'
 import { ListGroup} from 'react-bootstrap'
-import {onDeviceInfoListItemClicked, onDeviceInfoListMounted} from '../../actions/index.js'
+import {onDeviceInfoListItemClicked, refreshDeviceInfoList} from '../../actions/index.js'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
 //NOTE using Destructuring curly brackets to extract releveant properties from parent object
 //connect and mapstatetoprops as written wouldnt work without this (or alternatively replacing arguments with  redundant top level props object)
-const DeviceList = ({deviceInfos, selectedSerialNo, onListMounted, onItemClicked}) =>
+const DeviceList = ({deviceInfos, selectedSerialNo, refreshDeviceInfoList, onItemClicked}) =>
 {
-    // Similar to componentDidMount second argument is a watched object that triggers a refire so currently only gets called once
-    useEffect(onListMounted, [])
+    // useEffect is pure function equivalent to  componentDidMount second argument is an array of  watched objects that if changed ANDED with the didmount
+    // in  this case an empty array so it is not fired on each mounted event (which happens frequently)
+    // set interval is used to do a timed fire of the refreshDeviceInfoList action
+    // note the callback passed to useEffect actually returns a function this is called by React at unmont time (doesnt happen in this app) 
+    useEffect(()=>
+    {const refreshInterval = setInterval(refreshDeviceInfoList,5000)
+    return () => {
+      console.log('un mounting list component')
+      clearInterval(refreshInterval)
+    }
+   }
+    , [])
     //TODO Add a status message to state
     return <ListGroup title={'List contains ' + deviceInfos.length + ' items'} className='text-left'>
           { (deviceInfos.length === 0) &&
@@ -25,7 +35,7 @@ const DeviceList = ({deviceInfos, selectedSerialNo, onListMounted, onItemClicked
 //Some type checking error is loged to console is property not supplied
 DeviceList.propTypes = {
   deviceInfos:PropTypes.array.isRequired,
-  onListMounted: PropTypes.func.isRequired
+  refreshDeviceInfoList: PropTypes.func.isRequired
 }
 
 
@@ -36,6 +46,7 @@ const DeviceInfoItem = ({deviceInfo, onItemClicked}) =>
       <span onClick={()=>{onItemClicked(deviceInfo.serialNo)}}  >Serial No : {deviceInfo.serialNo}<br/>
       Description : {deviceInfo.description}<br/>
       <br/><br/></span>
+
 
 
 //todo seperate outin own file NOTE when binding ********** combine reducers adds level to object heirarchy
@@ -55,7 +66,7 @@ const mapStateToDeviceListProps = (state) => {
 
 const ConnectedDeviceList = connect(
   mapStateToDeviceListProps ,
-  {onItemClicked:onDeviceInfoListItemClicked, onListMounted:onDeviceInfoListMounted}
+  {onItemClicked:onDeviceInfoListItemClicked, refreshDeviceInfoList:refreshDeviceInfoList}
 )(DeviceList)
 
 

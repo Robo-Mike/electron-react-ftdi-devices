@@ -36,7 +36,7 @@ const deviceInfoListReducer = (state = initialDeviceInfoListState, action ) => {
   switch(action.type)
   {
     case types.GETTING_DEVICE_INFOS:
-        return initialDeviceInfoListState
+        return {...state}
     case types.RECEIVED_DEVICE_INFOS:
         return {...state, deviceInfos : action.deviceInfos}
     default:
