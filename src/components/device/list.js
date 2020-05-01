@@ -11,7 +11,7 @@ const DeviceList = ({deviceInfos, selectedSerialNo, refreshDeviceInfoList, onIte
     // useEffect is pure function equivalent to  componentDidMount second argument is an array of  watched objects that if changed ANDED with the didmount
     // in  this case an empty array so it is not fired on each mounted event (which happens frequently)
     // set interval is used to do a timed fire of the refreshDeviceInfoList action
-    // note the callback passed to useEffect actually returns a function this is called by React at unmont time (doesnt happen in this app) 
+    // note the callback passed to useEffect actually returns a function this is called by React at unmont time (doesnt happen in this app)
     useEffect(()=>
     {const refreshInterval = setInterval(refreshDeviceInfoList,5000)
     return () => {
@@ -21,12 +21,12 @@ const DeviceList = ({deviceInfos, selectedSerialNo, refreshDeviceInfoList, onIte
    }
     , [])
     //TODO Add a status message to state
-    return <ListGroup title={'List contains ' + deviceInfos.length + ' items'} className='text-left'>
+    return <ListGroup title={'List contains ' + deviceInfos.length + ' items'} >
           { (deviceInfos.length === 0) &&
-            <ListGroup.Item >No devices Found</ListGroup.Item>}
+            <ListGroup.Item className='bg-dark text-light' >No devices Found</ListGroup.Item>}
             {
               deviceInfos.map((item,key)=>
-              <ListGroup.Item active={selectedSerialNo===item.serialNo} key={item.serialNo} ><DeviceInfoItem deviceInfo={item} onItemClicked={onItemClicked} /></ListGroup.Item>
+              <ListGroup.Item className='bg-dark text-light' active={selectedSerialNo===item.serialNo} key={item.serialNo} ><DeviceInfoItem deviceInfo={item} onItemClicked={onItemClicked} /></ListGroup.Item>
              )
             }
       </ListGroup>

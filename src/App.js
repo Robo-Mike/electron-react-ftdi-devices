@@ -8,13 +8,14 @@ function App() {
   console.log('App is using React version ' + React.version )
   return (
     <div className='App'>
-      <div className='site-header'>
+
+      <div className='navbar text-light bg-dark'>
       <h1>FTDI Device Demo</h1>
       </div>
-      <Container >
+      <Container  fluid >
         <Row>
-          <Col xs={3} ><ConnectedDeviceList   /></Col>
-          <Col xs={9} ><ConnectedDeviceForm  /></Col>
+          <Col xs={3} className='p-2'><ConnectedDeviceList   /></Col>
+          <Col xs={9} className='p-2' ><ConnectedDeviceForm  /></Col>
 
         </Row>
       </Container>
