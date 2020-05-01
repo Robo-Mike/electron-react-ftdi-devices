@@ -7,7 +7,7 @@ const initialDeviceState = {statusMessage:'not connected',device:{serialNo: 0, d
 //DEVICE STATE reducer
 
 const deviceReducer = (state = initialDeviceState, action) => {
-  console.log('device reducer received action ' + action.type)
+  //console.log('device reducer received action ' + action.type)
   switch(action.type)
   {
     case types.DEVICE_CONNECTED:
@@ -32,7 +32,7 @@ const deviceInfoListReducer = (state = initialDeviceInfoListState, action ) => {
   // var devinfos =  DeviceInfoListData
   // console.log('deviceinfos length is ' + devinfos.length  )
   // return {deviceInfos:devinfos}
-  console.log('device info reducer received action' + action.type)
+  //console.log('device info reducer received action' + action.type)
   switch(action.type)
   {
     case types.GETTING_DEVICE_INFOS:

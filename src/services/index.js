@@ -14,6 +14,7 @@ let FTD2XX = window.require('n-ftdi')
 
 export const getDeviceInfoList = async  () => {
   const myList = await FTD2XX.FTDI.getDeviceList()
+  console.log('real list retrieved ' + myList.deviceList.length)
   return myList.deviceList.map((value,index) => ({serialNo: value.serialNumber, description: value.description, productCode: 'XYZ'}) )
 }
 
@@ -36,17 +37,20 @@ export const openDeviceMock = (serialNo) => {
 }
 
 export const openDevice = async (serialNo) => {
-  console.log('Opening device with serial no ' + serialNo)
-  const status = await FTD2XX.FTDI.openBySerialNumber(serialNo)
-  if (status == FTD2XX.FTDI.FT_STATUS.FT_OK )
+  console.log('Opening device with serial no !'+ serialNo + '!')
+  //think we need to move scope of this up so we can keep hold of handle x
+  const ftdi = new FTD2XX.FTDI()
+  const status =  await ftdi.openBySerialNumber(serialNo)
+  console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
+  if (status == FTD2XX.FT_STATUS.FT_OK )
   {
-    console.log ('Status is' + status)
+    console.log ('getting device info' + deviceInfo)
     //TODO wrap write and get status + read with APT function to get position
-    const deviceInfo = await  FTD2XX.FTDI.getDeviceInfo()
+    const deviceInfo = await  ftdi.getDeviceInfo()
+
     return {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : 5.0, connected : true, targetPosition : 0 }
   }
   else {
-    console.log (status)
     //TODO cant connect message
     return {}
   }

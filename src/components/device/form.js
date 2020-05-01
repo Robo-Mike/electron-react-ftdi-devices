@@ -56,7 +56,7 @@ export const  DeviceForm = ({device, onGoClicked, onTargetPositionChanged, statu
 
 
 const mapStateToProps = (state) => {
-      console.log ('mapstatetodeviceprops called')
+      //console.log ('mapstatetodeviceprops called')
       //Note object level introduced by combine reducers
       return { device: state.deviceReducer.device, statusMessage: state.deviceReducer.statusMessage}
 }

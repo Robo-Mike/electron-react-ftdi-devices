@@ -8,7 +8,7 @@ function App() {
   console.log('App is using React version ' + React.version )
   return (
     <div className='App'>
-      <div className='page-header'>
+      <div className='site-header'>
       <h1>FTDI Device Demo</h1>
       </div>
       <Container >
