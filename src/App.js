@@ -7,7 +7,7 @@ import ConnectedDeviceList from './components/device/list.js'
 function App() {
   console.log('App is using React version ' + React.version )
   return (
-    <div className='App'>
+    <div className='App bg-dark '>
 
       <div className='navbar text-light bg-dark'>
       <h1>FTDI Device Demo</h1>

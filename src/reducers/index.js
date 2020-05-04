@@ -10,6 +10,7 @@ const deviceReducer = (state = initialDeviceState, action) => {
   //console.log('device reducer received action ' + action.type)
   switch(action.type)
   {
+
     case types.DEVICE_CONNECTED:
         //console.log('device reducer action device serial no is ' + action.device.serialNo)
         return { statusMessage: 'connected' , device:action.device}
@@ -18,7 +19,7 @@ const deviceReducer = (state = initialDeviceState, action) => {
     case types.SET_DEVICE_POSITION:
       return { statusMessage: state.statusMessage ,device: {...state.device, targetPosition : action.targetPosition  }}
     case types.SELECTING_DEVICE:
-        return initialDeviceState
+        return {  ...initialDeviceState,statusMessage: 'connecting'}
     // undefined initializes state
     default:
         return state

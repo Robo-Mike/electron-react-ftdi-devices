@@ -42,9 +42,9 @@ export const openDevice = async (serialNo) => {
   const ftdi = new FTD2XX.FTDI()
   const status =  await ftdi.openBySerialNumber(serialNo)
   console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
-  if (status == FTD2XX.FT_STATUS.FT_OK )
+  if (status === FTD2XX.FT_STATUS.FT_OK )
   {
-    console.log ('getting device info' + deviceInfo)
+    console.log ('getting device info' )
     //TODO wrap write and get status + read with APT function to get position
     const deviceInfo = await  ftdi.getDeviceInfo()
 

@@ -59,7 +59,7 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
 }
 
 export const refreshDeviceInfoList = () => {
-  //console.log('Refresh device list called')
+  console.log('Refresh device list called')
   return dispatch => {
     dispatch(createGettingDeviceInfos())
     getDeviceInfoList()

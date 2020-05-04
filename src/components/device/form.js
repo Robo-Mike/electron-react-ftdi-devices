@@ -9,7 +9,7 @@ const FullDeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMes
 </div>
 
 const  EmptyDeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMessage}) =>   {
-  const noDeviceMarkup = <div >No device selected</div>
+  const noDeviceMarkup = <div className='bg-secondary text-light rounded '  >No device selected</div>
   if (!device )
   {
   return noDeviceMarkup
@@ -26,7 +26,7 @@ const  EmptyDeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusM
 
 
 export const  DeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMessage}) =>
-<Container className='rounded bg-info text-white border ' >
+<Container className='bg-secondary text-light rounded ' >
     <Row  >
     <Col ><h3>{device.description} ({device.productCode}) - s/n {device.serialNo}</h3></Col>
   </Row>
@@ -43,14 +43,14 @@ export const  DeviceForm = ({device, onGoClicked, onTargetPositionChanged, statu
           <div className='input-group'>
           <input type='text' className='form-control' onChange={(e) => onTargetPositionChanged(e.target.value)}   />
           <span className='input-group-btn' >
-            <button className='btn btn-secondary' onClick={(e)=>{e.preventDefault(); onGoClicked();}} >Go</button>
+            <button className='btn btn-dark' onClick={(e)=>{e.preventDefault(); onGoClicked();}} >Go</button>
           </span>
           </div>
         </form>
 
         </Col>
     </Row>
-      <Row >Status:{statusMessage}
+      <Row ><Col className='text-left' >Status:{statusMessage}</Col>
       </Row>
 </Container>
 
