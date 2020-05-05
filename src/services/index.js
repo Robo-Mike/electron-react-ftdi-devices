@@ -1,7 +1,7 @@
 import {Data as DeviceInfoListData}  from './deviceinfolistdata.js'
 //mix of require and imports yeuch note import doesnt work for ftdi addon module
 //import * as FTD2XX from 'n-ftdi'
-let FTD2XX = window.require('n-ftdi')
+let FTD2XX = require('./n-ftdi-apt')
 
 
 // async function Test(){
@@ -13,6 +13,7 @@ let FTD2XX = window.require('n-ftdi')
 //compare contrast explicit promise against async method style
 
 export const getDeviceInfoList = async  () => {
+  console.log('getdeviceinfolist called ' )
   const myList = await FTD2XX.FTDI.getDeviceList()
   console.log('real list retrieved ' + myList.deviceList.length)
   return myList.deviceList.map((value,index) => ({serialNo: value.serialNumber, description: value.description, productCode: 'XYZ'}) )
@@ -40,7 +41,7 @@ export const openDevice = async (serialNo) => {
   console.log('Opening device with serial no !'+ serialNo + '!')
   //think we need to move scope of this up so we can keep hold of handle x
   const ftdi = new FTD2XX.FTDI()
-  const status =  await ftdi.openBySerialNumber(serialNo)
+  let status =  await ftdi.openBySerialNumber(serialNo)
   console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
   if (status === FTD2XX.FT_STATUS.FT_OK )
   {

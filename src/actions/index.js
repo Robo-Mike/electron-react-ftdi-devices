@@ -1,5 +1,6 @@
 import * as types from '../constants/actiontypes.js'
-import {getDeviceInfoList, openDevice} from '../services/index.js'
+import {getDeviceInfoList,openDevice} from '../services/index.js'
+//import {openDevice} from '../services/apt.js'
 
 //action creator bindings
 
