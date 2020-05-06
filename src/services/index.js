@@ -49,6 +49,8 @@ export const openDevice = async (serialNo) => {
     //TODO wrap write and get status + read with APT function to get position
     const deviceInfo = await  ftdi.getDeviceInfo()
 
+    const identifyStatus = await ftdi.identifyDevice()
+    console.log(' identify status = ' + identifyStatus)
     return {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : 5.0, connected : true, targetPosition : 0 }
   }
   else {

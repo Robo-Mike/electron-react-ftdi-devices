@@ -1,6 +1,12 @@
 'use strict'
 //const _ftdiAddon = window.require('bindings')('N-FTD2XX')
 const _ftdiAddon = window.require('../node_modules/n-ftdi/build/Release/N-FTD2XX')
+
+const APT_NON_CARD_DESTINATION = 0x50
+const APT_NON_CARD_SOURCE = 0x01
+const APT_CHANNEL_ONE_IDENT = 0x00
+
+
 // Flags for FT_OpenEx
 const FT_OPEN_BY_SERIAL_NUMBER = 0x00000001
 const FT_OPEN_BY_DESCRIPTION = 0x00000002
@@ -704,6 +710,8 @@ class FTDI {
     return _ftdiAddon.setBaudRate(this._ftHandle, baudRate)
   }
 
+
+
   _openAndSetupSync (openFuncSync) {
     let { ftStatus, ftHandle } = openFuncSync()
     if (ftStatus === FT_STATUS.FT_OK && ftHandle) {
@@ -719,7 +727,7 @@ class FTDI {
     let { ftStatus, ftHandle } = await openFunc()
     if (ftStatus === FT_STATUS.FT_OK && ftHandle) {
       this._ftHandle = ftHandle
-      ftStatus = await this._setUpFtdiDevice()
+      ftStatus = await this._setUpAptDevice()
     } else {
       this._ftHandle = null
     }
@@ -1241,6 +1249,49 @@ class FTDI {
     if (!this._canSetBitMode(ftDevice, bitMode)) errorHandler(ftStatus, FT_ERROR.FT_INVALID_BITMODE)
     return _ftdiAddon.setBitMode(this._ftHandle, mask, bitMode)
   }
+
+
+  async _setUpAptDevice () {
+    // Initialise port data characteristics
+    const wordLength = FT_DATA_BITS.FT_BITS_8
+    const stopBits = FT_STOP_BITS.FT_STOP_BITS_1
+    const parity = FT_PARITY.FT_PARITY_NONE
+    // same as generic
+
+    let ftStatus = await _ftdiAddon.setDataCharacteristics(this._ftHandle, wordLength, stopBits, parity)
+    if (ftStatus !== FT_STATUS.FT_OK) return ftStatus
+
+
+    const flowControl = FT_FLOW_CONTROL.FT_FLOW_RTS_CTS
+    ftStatus = await _ftdiAddon.setFlowControl(this._ftHandle, flowControl, 0, 0)
+    if (ftStatus !== FT_STATUS.FT_OK) return ftStatus
+
+
+    // Initialise Baud rate
+    const baudRate = 115200
+    ftStatus = await _ftdiAddon.setBaudRate(this._ftHandle, baudRate)
+    if (ftStatus !== FT_STATUS.FT_OK) return ftStatus
+
+    //This may be neccessary
+    // ftStatus = await _ftdiAddon.setRts(this._ftHandle)
+    // console.log('in _setUpAptDevice')
+    return ftStatus
+
+  }
+
+
+
+  //TODO APT funcs refactor to new module
+
+
+  async identifyDevice() {
+      const txBuffer = Buffer.from([0x23, 0x02, APT_CHANNEL_ONE_IDENT, 0x00, APT_NON_CARD_DESTINATION, APT_NON_CARD_SOURCE])
+      const numBytesToWrite = txBuffer.length
+      console.log(' bytes length is ' + numBytesToWrite)
+      const ftStatus = await this.write(txBuffer)
+      return ftStatus.ftStatus
+  }
+
 }
 
 module.exports = {
