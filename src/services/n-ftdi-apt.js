@@ -4,8 +4,8 @@ const _ftdiAddon = window.require('../node_modules/n-ftdi/build/Release/N-FTD2XX
 
 const APT_NON_CARD_DESTINATION = 0x50
 const APT_NON_CARD_SOURCE = 0x01
+const APT_DONT_CARE_BYTE = 0x00
 const APT_CHANNEL_ONE_IDENT = 0x00
-
 
 // Flags for FT_OpenEx
 const FT_OPEN_BY_SERIAL_NUMBER = 0x00000001
@@ -1285,12 +1285,29 @@ class FTDI {
 
 
   async identifyDevice() {
-      const txBuffer = Buffer.from([0x23, 0x02, APT_CHANNEL_ONE_IDENT, 0x00, APT_NON_CARD_DESTINATION, APT_NON_CARD_SOURCE])
+      const txBuffer = Buffer.from([0x23, 0x02, APT_DONT_CARE_BYTE, APT_DONT_CARE_BYTE, APT_NON_CARD_DESTINATION, APT_NON_CARD_SOURCE])
       const numBytesToWrite = txBuffer.length
       console.log(' bytes length is ' + numBytesToWrite)
       const ftStatus = await this.write(txBuffer)
       return ftStatus.ftStatus
   }
+
+
+  async requestStatusPzMot() {
+      const txBuffer = Buffer.from([0xE0, 0x08, APT_CHANNEL_ONE_IDENT, 0x00, APT_NON_CARD_DESTINATION, APT_NON_CARD_SOURCE])
+      const ftStatus = await this.write(txBuffer)
+      return ftStatus.ftStatus
+  }
+
+//TODO memory implications of returning buffer initialised elsewhere
+  async getStatusPzMot() {
+      const txBuffer = Buffer.alloc(62)
+      const ftStatus = await this.read(txBuffer)
+      //TODO unwrap status bits, position
+      console.log('gets status bytes is' + txBuffer[6] + txBuffer[7])
+      return { ftStatus : ftStatus.ftStatus, bytes : txBuffer}
+  }
+
 
 }
 

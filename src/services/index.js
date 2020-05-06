@@ -37,6 +37,13 @@ export const openDeviceMock = (serialNo) => {
   } )
 }
 
+async function wait(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
+
 export const openDevice = async (serialNo) => {
   console.log('Opening device with serial no !'+ serialNo + '!')
   //think we need to move scope of this up so we can keep hold of handle x
@@ -46,11 +53,16 @@ export const openDevice = async (serialNo) => {
   if (status === FTD2XX.FT_STATUS.FT_OK )
   {
     console.log ('getting device info' )
-    //TODO wrap write and get status + read with APT function to get position
+
     const deviceInfo = await  ftdi.getDeviceInfo()
 
-    const identifyStatus = await ftdi.identifyDevice()
-    console.log(' identify status = ' + identifyStatus)
+    status = await ftdi.identifyDevice()
+    console.log(' identify status = ' + status)
+    status = await ftdi.requestStatusPzMot()
+    console.log('requeststatus status = ' + status)
+    await wait(500)
+    status = await ftdi.getStatusPzMot()
+    console.log(' getstatus status = ' + status)
     return {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : 5.0, connected : true, targetPosition : 0 }
   }
   else {
