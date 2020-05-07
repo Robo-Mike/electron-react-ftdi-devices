@@ -52,21 +52,34 @@ export const openDevice = async (serialNo) => {
   console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
   if (status === FTD2XX.FT_STATUS.FT_OK )
   {
+    //TODO too much going on here  without involving reducer I think
     console.log ('getting device info' )
-
     const deviceInfo = await  ftdi.getDeviceInfo()
-
     status = await ftdi.identifyDevice()
     console.log(' identify status = ' + status)
+
+    let currentPosition = 0
     status = await ftdi.requestStatusPzMot()
     console.log('requeststatus status = ' + status)
     await wait(500)
-    status = await ftdi.getStatusPzMot()
-    console.log(' getstatus status = ' + status)
-    return {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : 5.0, connected : true, targetPosition : 0 }
+    // const ftGetStatusResult = await ftdi.getStatusPzMot()
+    // if (ftGetStatusResult.isUpdate)
+    // {
+    //   currentPosition == ftGetStatusResult.position
+    // }
+    // console.log(' getstatus status = ' + status)
+    const getDeviceStatusResult = await getDeviceStatus(ftdi)
+    currentPosition = getDeviceStatusResult.currentPosition
+    return { ftdi: ftdi,
+      device: {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : currentPosition, connected : true, targetPosition : 0 }}
   }
   else {
     //TODO cant connect message
     return {}
   }
+}
+
+export const getDeviceStatus = async (ftdi) => {
+  return await ftdi.getStatusPzMot()
+
 }

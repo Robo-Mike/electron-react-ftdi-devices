@@ -795,6 +795,7 @@ class FTDI {
    * @returns {Promise<GetDeviceListResult>}
    */
   static async getDeviceList () {
+    console.log('meh')
     const deviceList = []
     let { ftStatus, devCount } = await _ftdiAddon.createDeviceInfoList()
     for (let i = 0; i < devCount; ++i) {
@@ -1279,8 +1280,6 @@ class FTDI {
 
   }
 
-
-
   //TODO APT funcs refactor to new module
 
 
@@ -1301,13 +1300,25 @@ class FTDI {
 
 //TODO memory implications of returning buffer initialised elsewhere
   async getStatusPzMot() {
-      const txBuffer = Buffer.alloc(62)
-      const ftStatus = await this.read(txBuffer)
-      //TODO unwrap status bits, position
-      console.log('gets status bytes is' + txBuffer[6] + txBuffer[7])
-      return { ftStatus : ftStatus.ftStatus, bytes : txBuffer}
+      const ftGetStatusResult = await this.getStatus()
+      let rxBuffer = Buffer.alloc(0)
+      let ftStatus = ftGetStatusResult.ftStatus
+      let isUpdate = false
+      let position = 0
+      console.log( 'get status result is ' + ftStatus + 'rx queue is' + ftGetStatusResult.rxQueue)
+      if ( ftStatus === FT_STATUS.FT_OK && ftGetStatusResult.rxQueue > 0)
+      {
+        isUpdate = true
+        console.log( 'in block')
+        rxBuffer = Buffer.alloc(ftGetStatusResult.rxQueue)
+        console.log( rxBuffer.length +  ' bytes in read buffer')
+        ftStatus = await this.read(rxBuffer)
+        //TODO unwrap status bits, position
+        console.log('gets status position bytes are' + rxBuffer[8] + rxBuffer[9] + rxBuffer[10] + rxBuffer[11]  )
+        position = rxBuffer[8]
+      }
+      return { isUpdate : isUpdate , position : position}
   }
-
 
 }
 

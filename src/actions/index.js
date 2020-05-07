@@ -3,6 +3,8 @@ import {getDeviceInfoList,openDevice} from '../services/index.js'
 //import {openDevice} from '../services/apt.js'
 
 //action creator bindings
+let requestStatusTimer
+let getStatusTimer
 
 const createGettingDeviceInfos = ()=> {
   return {type : types.GETTING_DEVICE_INFOS}
@@ -48,28 +50,17 @@ const createSendToDevice= ()=> {
     type: types.SEND_TO_DEVICE
   }
 }
-//TODO services openDevice, getDeviceInfoList
-//TOD0 handle errors add new opendeviceerror action type
-//ACTIONS proper TODO do i need to pass dispatch as argument or can I just return func??
-export const onDeviceInfoListItemClicked = (serialNo) => {
-  return dispatch => {
-    dispatch(createSelectingDevice(serialNo))
-    openDevice(serialNo)
-    .then(device => {dispatch( createDeviceConnected(device))} , obj => {/*todo open device error*/} )
-  }
-}
+
 
 export const refreshDeviceInfoList = () => {
   console.log('Refresh device list called')
-  return dispatch => {
+    return dispatch => {
     dispatch(createGettingDeviceInfos())
     getDeviceInfoList()
     .then(deviceInfos => {
       dispatch(createReceivedDeviceInfos(deviceInfos))}, obj => {/*todo getdeviceinfos error*/})
   }
 }
-
-
 
 export const onTargetPositionChanged = (targetPosition) => {
   return dispatch => {
@@ -84,6 +75,33 @@ export const onSendToDevice = (targetPosition) => {
     console.log("call set target here")
   }
 
+}
 
 
+//TODO services openDevice, getDeviceInfoList
+//TOD0 handle errors add new opendeviceerror action type
+export const onDeviceInfoListItemClicked = (serialNo) => {
+  return dispatch => {
+    dispatch(createSelectingDevice(serialNo))
+    openDevice(serialNo)
+    .then(obj => {dispatch(createDeviceConnected(obj.device))
+                    onOpenDeviceSuccesfull(obj.ftdi)} , obj => {/*todo open device error*/} )
+  }
+}
+
+const onOpenDeviceSuccesfull = (ftdi) => {
+
+    //requestStatusTimer = setInterval(ftdi.requestStatusPzMot,100)
+    //getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi)},75)
+
+}
+
+
+export const getDeviceStatus = async (ftdi) => {
+  let currentPosition = 0
+  const ftGetStatusResult = await ftdi.getStatusPzMot()
+  if (ftGetStatusResult.isUpdate)
+  {
+    return (dispatch) => {dispatch(createReceivedDeviceStatus(ftGetStatusResult.currentPosition))}
+  }
 }
