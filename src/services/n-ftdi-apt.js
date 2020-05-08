@@ -795,7 +795,7 @@ class FTDI {
    * @returns {Promise<GetDeviceListResult>}
    */
   static async getDeviceList () {
-    console.log('meh')
+    console.log('meh second third edit')
     const deviceList = []
     let { ftStatus, devCount } = await _ftdiAddon.createDeviceInfoList()
     for (let i = 0; i < devCount; ++i) {
@@ -1299,6 +1299,7 @@ class FTDI {
   }
 
 //TODO memory implications of returning buffer initialised elsewhere
+//TODO REFACTOR this to read buffer then extract message
   async getStatusPzMot() {
       const ftGetStatusResult = await this.getStatus()
       let rxBuffer = Buffer.alloc(0)
@@ -1309,13 +1310,27 @@ class FTDI {
       if ( ftStatus === FT_STATUS.FT_OK && ftGetStatusResult.rxQueue > 0)
       {
         isUpdate = true
-        console.log( 'in block')
         rxBuffer = Buffer.alloc(ftGetStatusResult.rxQueue)
-        console.log( rxBuffer.length +  ' bytes in read buffer')
+        //console.log( rxBuffer.length +  ' bytes in read buffer')
         ftStatus = await this.read(rxBuffer)
         //TODO unwrap status bits, position
-        console.log('gets status position bytes are' + rxBuffer[8] + rxBuffer[9] + rxBuffer[10] + rxBuffer[11]  )
-        position = rxBuffer[8]
+
+        //DEBUG
+        // for (let i = 0; i < rxBuffer.length; i++)
+        // {
+        //   console.log('byte [' + i +'] = ' + rxBuffer[i] )
+        // }
+        if ( rxBuffer.length >= 6 )
+        {
+          if (rxBuffer[0] === 0xE1 && rxBuffer[1] === 0x08)
+          {
+            //0x08E1 = MGMSG_PZMOT_GET_STATUSUPDATE
+            //TOODo any libraries for multibyte number?
+            position = rxBuffer[8]  + (rxBuffer[9] << 8) +  (rxBuffer[10] << 16 ) + (rxBuffer[11] << 24 )
+          }
+        }
+        console.log('get status position bytes  are '+ rxBuffer[7] + '|'  + rxBuffer[8] + '|' + rxBuffer[9] + '|' + rxBuffer[10] + '|' + rxBuffer[11]  )
+
       }
       return { isUpdate : isUpdate , position : position}
   }

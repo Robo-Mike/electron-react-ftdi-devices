@@ -69,7 +69,8 @@ export const openDevice = async (serialNo) => {
     // }
     // console.log(' getstatus status = ' + status)
     const getDeviceStatusResult = await getDeviceStatus(ftdi)
-    currentPosition = getDeviceStatusResult.currentPosition
+    currentPosition = getDeviceStatusResult.position
+    console.log('currentPosition is ' + currentPosition )
     return { ftdi: ftdi,
       device: {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : currentPosition, connected : true, targetPosition : 0 }}
   }
