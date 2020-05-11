@@ -2,10 +2,13 @@ import * as types from '../constants/actiontypes.js'
 import {getDeviceInfoList,openDevice} from '../services/index.js'
 //import {openDevice} from '../services/apt.js'
 
-//action creator bindings
+//module scope variables  - perhaps these should be pushed into state
+//TODO need to clear up in disconnect
 let requestStatusTimer
 let getStatusTimer
 
+
+//action creator bindings
 const createGettingDeviceInfos = ()=> {
   return {type : types.GETTING_DEVICE_INFOS}
 }
@@ -24,10 +27,11 @@ const createSelectingDevice = (serialNo)=> {
   }
 }
 
-const createDeviceConnected = (device)=> {
+const createDeviceConnected = (device, ftdiHandle)=> {
   return {
     type: types.DEVICE_CONNECTED,
-    device: device
+    device: device,
+    ftdiHandle : ftdiHandle
   }
 }
 
@@ -65,14 +69,18 @@ export const refreshDeviceInfoList = () => {
 export const onTargetPositionChanged = (targetPosition) => {
   return dispatch => {
     dispatch(createSetTargetPosition(targetPosition))
+
   }
 }
 
-export const onSendToDevice = (targetPosition) => {
-  return dispatch => {
-    dispatch(createSendToDevice(targetPosition))
+export const onSendToDevice = () => {
+  return async ( dispatch, getState ) => {
+    dispatch(createSendToDevice())
     //TODo send set message but dont wait for response
-    console.log("call set target here")
+    const ftdi = getState().deviceReducer.ftdiHandle
+    const targetPosition = getState().deviceReducer.device.targetPosition
+    const ftStatus = await ftdi.setMoveAbsolutePzMot(targetPosition)
+    //console.log('set position status returned' + ftStatus)
   }
 
 }
@@ -84,24 +92,25 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
   return dispatch => {
     dispatch(createSelectingDevice(serialNo))
     openDevice(serialNo)
-    .then(obj => {dispatch(createDeviceConnected(obj.device))
-                    onOpenDeviceSuccesfull(obj.ftdi)} , obj => {/*todo open device error*/} )
+    .then(obj => {dispatch(createDeviceConnected(obj.device, obj.ftdi))
+                    onOpenDeviceSuccesfull(obj.ftdi, dispatch)} , obj => {/*todo open device error*/} )
   }
 }
 
-const onOpenDeviceSuccesfull = (ftdi) => {
-
-    //requestStatusTimer = setInterval(ftdi.requestStatusPzMot,100)
-    //getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi)},75)
+const onOpenDeviceSuccesfull = (ftdi, dispatch) => {
+    requestStatusTimer = setInterval(() => {ftdi.requestStatusPzMot()},10000)
+    getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi, dispatch)},8000)
 
 }
 
 
-export const getDeviceStatus = async (ftdi) => {
-  let currentPosition = 0
+export const getDeviceStatus = async (ftdi, dispatch) => {
   const ftGetStatusResult = await ftdi.getStatusPzMot()
+  //console.log("status Result is update = " + ftGetStatusResult.isUpdate + " dispatch is" + dispatch)
+
   if (ftGetStatusResult.isUpdate)
   {
-    return (dispatch) => {dispatch(createReceivedDeviceStatus(ftGetStatusResult.currentPosition))}
+      dispatch(createReceivedDeviceStatus(ftGetStatusResult.position))
+
   }
 }

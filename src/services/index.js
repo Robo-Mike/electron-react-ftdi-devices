@@ -37,6 +37,7 @@ export const openDeviceMock = (serialNo) => {
   } )
 }
 
+
 async function wait(ms) {
   return new Promise(resolve => {
     setTimeout(resolve, ms)
@@ -53,14 +54,14 @@ export const openDevice = async (serialNo) => {
   if (status === FTD2XX.FT_STATUS.FT_OK )
   {
     //TODO too much going on here  without involving reducer I think
-    console.log ('getting device info' )
+    //console.log ('getting device info' )
     const deviceInfo = await  ftdi.getDeviceInfo()
     status = await ftdi.identifyDevice()
-    console.log(' identify status = ' + status)
+    //console.log(' identify status = ' + status)
 
     let currentPosition = 0
     status = await ftdi.requestStatusPzMot()
-    console.log('requeststatus status = ' + status)
+    //console.log('requeststatus status = ' + status)
     await wait(500)
     // const ftGetStatusResult = await ftdi.getStatusPzMot()
     // if (ftGetStatusResult.isUpdate)
@@ -70,7 +71,7 @@ export const openDevice = async (serialNo) => {
     // console.log(' getstatus status = ' + status)
     const getDeviceStatusResult = await getDeviceStatus(ftdi)
     currentPosition = getDeviceStatusResult.position
-    console.log('currentPosition is ' + currentPosition )
+    //console.log('currentPosition is ' + currentPosition )
     return { ftdi: ftdi,
       device: {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : currentPosition, connected : true, targetPosition : 0 }}
   }
@@ -82,5 +83,4 @@ export const openDevice = async (serialNo) => {
 
 export const getDeviceStatus = async (ftdi) => {
   return await ftdi.getStatusPzMot()
-
 }

@@ -63,6 +63,7 @@ const mapStateToDeviceListProps = (state) => {
 
 
 //NOTE *******connected version of the component needs to be used in markup, not the original DeviceInfoList
+//NOTE refreshDeviceInfoList is not actually called by the UI, rather by a timer process
 
 const ConnectedDeviceList = connect(
   mapStateToDeviceListProps ,

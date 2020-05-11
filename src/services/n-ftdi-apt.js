@@ -5,7 +5,7 @@ const _ftdiAddon = window.require('../node_modules/n-ftdi/build/Release/N-FTD2XX
 const APT_NON_CARD_DESTINATION = 0x50
 const APT_NON_CARD_SOURCE = 0x01
 const APT_DONT_CARE_BYTE = 0x00
-const APT_CHANNEL_ONE_IDENT = 0x00
+const APT_CHANNEL_ONE_IDENT = 0x01
 
 // Flags for FT_OpenEx
 const FT_OPEN_BY_SERIAL_NUMBER = 0x00000001
@@ -1309,7 +1309,7 @@ class FTDI {
       console.log( 'get status result is ' + ftStatus + 'rx queue is' + ftGetStatusResult.rxQueue)
       if ( ftStatus === FT_STATUS.FT_OK && ftGetStatusResult.rxQueue > 0)
       {
-        isUpdate = true
+        isUpdate = false
         rxBuffer = Buffer.alloc(ftGetStatusResult.rxQueue)
         //console.log( rxBuffer.length +  ' bytes in read buffer')
         ftStatus = await this.read(rxBuffer)
@@ -1325,8 +1325,9 @@ class FTDI {
           if (rxBuffer[0] === 0xE1 && rxBuffer[1] === 0x08)
           {
             //0x08E1 = MGMSG_PZMOT_GET_STATUSUPDATE
-            //TOODo any libraries for multibyte number?
+            //TO Do any libraries for multibyte number?
             position = rxBuffer[8]  + (rxBuffer[9] << 8) +  (rxBuffer[10] << 16 ) + (rxBuffer[11] << 24 )
+            isUpdate = true
           }
         }
         console.log('get status position bytes  are '+ rxBuffer[7] + '|'  + rxBuffer[8] + '|' + rxBuffer[9] + '|' + rxBuffer[10] + '|' + rxBuffer[11]  )
@@ -1334,6 +1335,31 @@ class FTDI {
       }
       return { isUpdate : isUpdate , position : position}
   }
+
+
+  async setMoveAbsolutePzMot(targetPosition) {
+
+      const header = Buffer.from([0xD4, 0x08, 0x06, 0x00, APT_NON_CARD_DESTINATION, APT_NON_CARD_SOURCE])
+      const channelIdent = Buffer.from([APT_CHANNEL_ONE_IDENT, 0x00])
+      const posBytes = Buffer.alloc(4)
+      //Get position bytes from decimal
+      posBytes[0] = targetPosition & 0xFF
+      posBytes[1] = (targetPosition >> 8) & 0xFF
+      posBytes[2] = (targetPosition >> 16) & 0xFF
+      posBytes[3] = (targetPosition >> 24) & 0xFF
+      const arr = [header, channelIdent, posBytes]
+      const txBuffer = Buffer.concat(arr)
+      //DEBUG
+      for (let i = 0; i < txBuffer.length; i++)
+      {
+        console.log('byte [' + i +'] = ' + txBuffer[i] )
+      }
+      const ftStatus = await this.write(txBuffer)
+      //console.log('in  setMoveAbsolutePzMot status is ' + ftStatus)
+      return ftStatus.ftStatus
+  }
+
+
 
 }
 

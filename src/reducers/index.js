@@ -3,7 +3,7 @@ import * as types from "../constants/actiontypes.js"
 import {Data as DeviceInfoListData}  from '../services/deviceinfolistdata.js'
 
 
-const initialDeviceState = {statusMessage:'not connected',device:{serialNo: 0, description: '', productCode: '', currentPosition: 0, connected: false, targetPosition:0}}
+const initialDeviceState = {statusMessage:'not connected',device:{serialNo: 0, description: '', productCode: '', currentPosition: 0, connected: false, targetPosition:0}, ftdiHandle: null}
 //DEVICE STATE reducer
 
 const deviceReducer = (state = initialDeviceState, action) => {
@@ -13,13 +13,13 @@ const deviceReducer = (state = initialDeviceState, action) => {
 
     case types.DEVICE_CONNECTED:
         //console.log('device reducer action device serial no is ' + action.device.serialNo)
-        return { statusMessage: 'connected' , device:action.device}
+        return { statusMessage: 'connected' , device:action.device, ftdiHandle: action.ftdiHandle}
     case types.RECEIVED_DEVICE_STATUS:
-        return { statusMessage: state.statusMessage ,device: {...state.device, currentPosition : action.currentPosition }}
+        return { statusMessage: state.statusMessage ,device: {...state.device, currentPosition : action.currentPosition }, ftdiHandle: state.ftdiHandle}
     case types.SET_DEVICE_POSITION:
-      return { statusMessage: state.statusMessage ,device: {...state.device, targetPosition : action.targetPosition  }}
+      return { statusMessage: state.statusMessage ,device: {...state.device, targetPosition : action.targetPosition  }, ftdiHandle: state.ftdiHandle}
     case types.SELECTING_DEVICE:
-        return {  ...initialDeviceState,statusMessage: 'connecting'}
+        return {  ...initialDeviceState,statusMessage: 'connecting', ftdiHandle: state.ftdiHandle}
     // undefined initializes state
     default:
         return state

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Container,Row,Col} from 'react-bootstrap';
 import { connect } from 'react-redux'
-import {onSendToDevice,onTargetPositionChanged} from '../../actions/index.js';
+import {onSendToDevice,onTargetPositionChanged, getDeviceStatus} from '../../actions/index.js';
 
 const FullDeviceForm = ({device, onGoClicked, onTargetPositionChanged, statusMessage}) =>
 <div>
