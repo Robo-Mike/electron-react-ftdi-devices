@@ -1,4 +1,5 @@
 import * as types from '../constants/actiontypes.js'
+import * as apttypes from '../services/aptconstants.js'
 import {getDeviceInfoList,openDevice} from '../services/index.js'
 //import {openDevice} from '../services/apt.js'
 
@@ -56,8 +57,10 @@ const createSendToDevice= ()=> {
 }
 
 
+/*BUSINESS LOGIC RELATING TO STATE CHANGES HERE*/
+
+
 export const refreshDeviceInfoList = () => {
-  console.log('Refresh device list called')
     return dispatch => {
     dispatch(createGettingDeviceInfos())
     getDeviceInfoList()
@@ -98,19 +101,21 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
 }
 
 const onOpenDeviceSuccesfull = (ftdi, dispatch) => {
-    requestStatusTimer = setInterval(() => {ftdi.requestStatusPzMot()},10000)
-    getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi, dispatch)},8000)
+    requestStatusTimer = setInterval(() => {ftdi.requestStatusPzMot()},250)
+    getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi, dispatch)},250)
 
 }
 
 
 export const getDeviceStatus = async (ftdi, dispatch) => {
-  const ftGetStatusResult = await ftdi.getStatusPzMot()
-  //console.log("status Result is update = " + ftGetStatusResult.isUpdate + " dispatch is" + dispatch)
-
-  if (ftGetStatusResult.isUpdate)
+  const messageResult = await ftdi.getMessage()
+  //console.log("messageResult type is " + messageResult.messageType )
+  if (messageResult.messageType === apttypes.APT_PZMOT_GET_STATUS_UPDATE)
   {
-      dispatch(createReceivedDeviceStatus(ftGetStatusResult.position))
-
+    if (messageResult.data.isUpdate)
+    {
+        dispatch(createReceivedDeviceStatus(messageResult.data.position))
+    }
   }
+
 }

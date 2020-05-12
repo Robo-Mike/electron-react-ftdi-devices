@@ -1,5 +1,6 @@
 import {Data as DeviceInfoListData}  from './deviceinfolistdata.js'
 import {wait} from '../utils/utils.js'
+import * as apttypes from './aptconstants.js'
 //mix of require and imports yeuch note import doesnt work for ftdi addon module
 //import * as FTD2XX from 'n-ftdi'
 let FTD2XX = require('./n-ftdi-apt')
@@ -14,9 +15,8 @@ let FTD2XX = require('./n-ftdi-apt')
 //compare contrast explicit promise against async method style
 
 export const getDeviceInfoList = async  () => {
-  console.log('getdeviceinfolist called ' )
   const myList = await FTD2XX.FTDI.getDeviceList()
-  console.log('real list retrieved ' + myList.deviceList.length)
+  console.log('getdeviceinfolist retrieved ' + myList.deviceList.length)
   return myList.deviceList.map((value,index) => ({serialNo: value.serialNumber, description: value.description, productCode: 'XYZ'}) )
 }
 
@@ -38,7 +38,9 @@ export const openDeviceMock = (serialNo) => {
   } )
 }
 
-
+export const getMessageResult = async (ftdi) => {
+  return await ftdi.getMessage()
+}
 
 
 export const openDevice = async (serialNo) => {
@@ -46,7 +48,7 @@ export const openDevice = async (serialNo) => {
   //think we need to move scope of this up so we can keep hold of handle x
   const ftdi = new FTD2XX.FTDI()
   let status =  await ftdi.openBySerialNumber(serialNo)
-  console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
+  //console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
   if (status === FTD2XX.FT_STATUS.FT_OK )
   {
     //TODO too much going on here  without involving reducer I think
@@ -59,14 +61,14 @@ export const openDevice = async (serialNo) => {
     status = await ftdi.requestStatusPzMot()
     //console.log('requeststatus status = ' + status)
     await wait(500)
-    // const ftGetStatusResult = await ftdi.getStatusPzMot()
+    // const ftGetStatusResult = await ftdi.getMessage()
     // if (ftGetStatusResult.isUpdate)
     // {
     //   currentPosition == ftGetStatusResult.position
     // }
-    // console.log(' getstatus status = ' + status)
-    const getDeviceStatusResult = await getDeviceStatus(ftdi)
-    currentPosition = getDeviceStatusResult.position
+    const messageResult = await getMessageResult(ftdi)
+    if (messageResult.messageType === apttypes.APT_PZMOT_GET_STATUS_UPDATE)
+      currentPosition = messageResult.data.position
     //console.log('currentPosition is ' + currentPosition )
     return { ftdi: ftdi,
       device: {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : currentPosition, connected : true, targetPosition : 0 }}
@@ -75,8 +77,4 @@ export const openDevice = async (serialNo) => {
     //TODO cant connect message
     return {}
   }
-}
-
-export const getDeviceStatus = async (ftdi) => {
-  return await ftdi.getStatusPzMot()
 }
