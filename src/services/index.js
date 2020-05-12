@@ -1,4 +1,5 @@
 import {Data as DeviceInfoListData}  from './deviceinfolistdata.js'
+import {wait} from '../utils/utils.js'
 //mix of require and imports yeuch note import doesnt work for ftdi addon module
 //import * as FTD2XX from 'n-ftdi'
 let FTD2XX = require('./n-ftdi-apt')
@@ -38,11 +39,6 @@ export const openDeviceMock = (serialNo) => {
 }
 
 
-async function wait(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms)
-  })
-}
 
 
 export const openDevice = async (serialNo) => {

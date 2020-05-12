@@ -6,6 +6,8 @@ const APT_NON_CARD_DESTINATION = 0x50
 const APT_NON_CARD_SOURCE = 0x01
 const APT_DONT_CARE_BYTE = 0x00
 const APT_CHANNEL_ONE_IDENT = 0x01
+//TODO why is this different from generic
+const APT_NON_CARD_PZ_MOV_DESTINATION = 0xD0
 
 // Flags for FT_OpenEx
 const FT_OPEN_BY_SERIAL_NUMBER = 0x00000001
@@ -795,7 +797,6 @@ class FTDI {
    * @returns {Promise<GetDeviceListResult>}
    */
   static async getDeviceList () {
-    console.log('meh second third edit')
     const deviceList = []
     let { ftStatus, devCount } = await _ftdiAddon.createDeviceInfoList()
     for (let i = 0; i < devCount; ++i) {
@@ -1313,13 +1314,7 @@ class FTDI {
         rxBuffer = Buffer.alloc(ftGetStatusResult.rxQueue)
         //console.log( rxBuffer.length +  ' bytes in read buffer')
         ftStatus = await this.read(rxBuffer)
-        //TODO unwrap status bits, position
-
-        //DEBUG
-        // for (let i = 0; i < rxBuffer.length; i++)
-        // {
-        //   console.log('byte [' + i +'] = ' + rxBuffer[i] )
-        // }
+        
         if ( rxBuffer.length >= 6 )
         {
           if (rxBuffer[0] === 0xE1 && rxBuffer[1] === 0x08)
@@ -1336,10 +1331,19 @@ class FTDI {
       return { isUpdate : isUpdate , position : position}
   }
 
+  debugBuffer(buf) {
+    //DEBUG
+    for (let i = 0; i < buf.length; i++)
+    {
+      console.log('byte [' + i +'] value = ' + buf[i] )
+    }
+  }
+
+
 
   async setMoveAbsolutePzMot(targetPosition) {
 
-      const header = Buffer.from([0xD4, 0x08, 0x06, 0x00, APT_NON_CARD_DESTINATION, APT_NON_CARD_SOURCE])
+      const header = Buffer.from([0xD4, 0x08, 0x06, 0x00, APT_NON_CARD_PZ_MOV_DESTINATION, APT_NON_CARD_SOURCE])
       const channelIdent = Buffer.from([APT_CHANNEL_ONE_IDENT, 0x00])
       const posBytes = Buffer.alloc(4)
       //Get position bytes from decimal
@@ -1349,15 +1353,14 @@ class FTDI {
       posBytes[3] = (targetPosition >> 24) & 0xFF
       const arr = [header, channelIdent, posBytes]
       const txBuffer = Buffer.concat(arr)
-      //DEBUG
-      for (let i = 0; i < txBuffer.length; i++)
-      {
-        console.log('byte [' + i +'] = ' + txBuffer[i] )
-      }
+      this.debugBuffer(txBuffer)
       const ftStatus = await this.write(txBuffer)
       //console.log('in  setMoveAbsolutePzMot status is ' + ftStatus)
       return ftStatus.ftStatus
   }
+
+
+
 
 
 
