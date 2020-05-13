@@ -1289,6 +1289,7 @@ class FTDI {
 
 
   async requestStatusPzMot() {
+      console.log('request devicestatus called')
       const txBuffer = Buffer.from([0xE0, 0x08, apttypes.APT_CHANNEL_ONE_IDENT, 0x00, apttypes.APT_NON_CARD_DESTINATION, apttypes.APT_NON_CARD_SOURCE])
       const ftStatus = await this.write(txBuffer)
       return ftStatus.ftStatus

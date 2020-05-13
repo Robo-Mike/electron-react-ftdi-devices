@@ -56,6 +56,12 @@ const createSendToDevice= ()=> {
   }
 }
 
+const createDeviceDisconnected = (statusMessage)=> {
+  return {
+    type: types.DEVICE_DISCONNECTED,
+    statusMessage:statusMessage
+  }
+}
 
 /*BUSINESS LOGIC RELATING TO STATE CHANGES HERE*/
 
@@ -76,10 +82,10 @@ export const onTargetPositionChanged = (targetPosition) => {
   }
 }
 
+//
 export const onSendToDevice = () => {
   return async ( dispatch, getState ) => {
     dispatch(createSendToDevice())
-    //TODo send set message but dont wait for response
     const ftdi = getState().deviceReducer.ftdiHandle
     const targetPosition = getState().deviceReducer.device.targetPosition
     const ftStatus = await ftdi.setMoveAbsolutePzMot(targetPosition)
@@ -103,13 +109,40 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
 const onOpenDeviceSuccesfull = (ftdi, dispatch) => {
     requestStatusTimer = setInterval(() => {ftdi.requestStatusPzMot()},250)
     getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi, dispatch)},250)
+}
+//These functions have a dependency on being connected to the store (i.e. being enlisted in the connect method)
+//Redux thunk populates the returned function with the dispatch and getstate
+export const onDisconnect =  () => {
+  if (requestStatusTimer)
+    clearInterval(requestStatusTimer)
+  if (getStatusTimer)
+    clearInterval(getStatusTimer)
+  return async (dispatch, getState) => {
+    const fH = getState().deviceReducer.ftdiHandle
+    console.log('fH is' + fH)
+    if (fH)
+    {
+      const ftStatus = await fH.close()
+      console.log('close status is' + ftStatus)
+      //TODO get rid of magic number import FT_STATUS
+      if (ftStatus === 0)
+      {
+        dispatch(createDeviceDisconnected('Disconnected succesfully'))
+        return 0
+      }
+    }
+    dispatch(createDeviceDisconnected('There was a problem disconnecting'))
+  }
 
 }
 
 
+
+
+
 export const getDeviceStatus = async (ftdi, dispatch) => {
   const messageResult = await ftdi.getMessage()
-  //console.log("messageResult type is " + messageResult.messageType )
+  console.log('getdevicestatus called')
   if (messageResult.messageType === apttypes.APT_PZMOT_GET_STATUS_UPDATE)
   {
     if (messageResult.data.isUpdate)

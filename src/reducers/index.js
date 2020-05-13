@@ -3,7 +3,7 @@ import * as types from "../constants/actiontypes.js"
 import {Data as DeviceInfoListData}  from '../services/deviceinfolistdata.js'
 
 
-const initialDeviceState = {statusMessage:'not connected',device:{serialNo: 0, description: '', productCode: '', currentPosition: 0, connected: false, targetPosition:0}, ftdiHandle: null}
+const initialDeviceState = {statusMessage:'No device connected',device:{serialNo: 0, description: '', productCode: '', currentPosition: 0, connected: false, targetPosition:0}, ftdiHandle: null}
 //DEVICE STATE reducer
 
 const deviceReducer = (state = initialDeviceState, action) => {
@@ -20,6 +20,8 @@ const deviceReducer = (state = initialDeviceState, action) => {
       return { statusMessage: state.statusMessage ,device: {...state.device, targetPosition : action.targetPosition  }, ftdiHandle: state.ftdiHandle}
     case types.SELECTING_DEVICE:
         return {  ...initialDeviceState,statusMessage: 'connecting', ftdiHandle: state.ftdiHandle}
+    case types.DEVICE_DISCONNECTED:
+        return {  ...initialDeviceState,statusMessage: action.statusMessage, ftdiHandle: null}
     // undefined initializes state
     default:
         return state
