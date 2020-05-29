@@ -15,6 +15,8 @@ let FTD2XX = require('./n-ftdi-apt')
 //compare contrast explicit promise against async method style
 
 export const getDeviceInfoList = async  () => {
+  //uncomment to rebuild and kick program into life
+  console.log('in get device info list ')
   const myList = await FTD2XX.FTDI.getDeviceList()
   console.log('getdeviceinfolist retrieved ' + myList.deviceList.length)
   return myList.deviceList.map((value,index) => ({serialNo: value.serialNumber, description: value.description, productCode: 'XYZ'}) )

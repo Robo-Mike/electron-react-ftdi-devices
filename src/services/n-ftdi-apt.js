@@ -1249,6 +1249,7 @@ class FTDI {
 
 
   async _setUpAptDevice () {
+    
     // Initialise port data characteristics
     const wordLength = FT_DATA_BITS.FT_BITS_8
     const stopBits = FT_STOP_BITS.FT_STOP_BITS_1

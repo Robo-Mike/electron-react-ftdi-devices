@@ -23,7 +23,7 @@ const DeviceList = ({deviceInfos, selectedSerialNo, refreshDeviceInfoList, onIte
     //TODO Add a status message to state
     return <ListGroup title={'List contains ' + deviceInfos.length + ' items'} >
           { (deviceInfos.length === 0) &&
-            <ListGroup.Item className='bg-secondary text-light' >No devices Found</ListGroup.Item>}
+            <ListGroup.Item className='bg-secondary text-light' >No devices Found (if you have device connected and are in dev/debugging please try a reload)</ListGroup.Item>}
             {
               deviceInfos.map((item,key)=>
               <ListGroup.Item className='bg-secondary text-light' active={selectedSerialNo===item.serialNo} key={item.serialNo} ><DeviceInfoItem deviceInfo={item} onItemClicked={onItemClicked} /></ListGroup.Item>
