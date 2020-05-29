@@ -3,7 +3,8 @@ import {wait} from '../utils/utils.js'
 import * as apttypes from './aptconstants.js'
 //mix of require and imports yeuch note import doesnt work for ftdi addon module
 //import * as FTD2XX from 'n-ftdi'
-let FTD2XX = require('./n-ftdi-apt')
+let APT = require ('./apt.js')
+let FTD2XX = window.require('n-ftdi')
 
 
 // async function Test(){
@@ -40,39 +41,40 @@ export const openDeviceMock = (serialNo) => {
   } )
 }
 
-export const getMessageResult = async (ftdi) => {
-  return await ftdi.getMessage()
+export const getMessageResult = async (aptController) => {
+  return await aptController.getMessage()
 }
 
 
 export const openDevice = async (serialNo) => {
   console.log('Opening device with serial no !'+ serialNo + '!')
-  //think we need to move scope of this up so we can keep hold of handle x
-  const ftdi = new FTD2XX.FTDI()
+  //APT needs these additional data characteristics which have been added to teh ftdi plugin
+  const ftdi = new FTD2XX.FTDI(115200,FTD2XX.FT_FLOW_CONTROL.FT_FLOW_RTS_CTS,0x0,0x0)
   let status =  await ftdi.openBySerialNumber(serialNo)
-  //console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
+  console.log ('status =' + status + 'ftstatus ok = ' + FTD2XX.FT_STATUS.FT_OK )
   if (status === FTD2XX.FT_STATUS.FT_OK )
   {
     //TODO too much going on here  without involving reducer I think
-    //console.log ('getting device info' )
+    console.log ('getting device info' )
     const deviceInfo = await  ftdi.getDeviceInfo()
-    status = await ftdi.identifyDevice()
-    //console.log(' identify status = ' + status)
+    const aptController = new APT.Controller(ftdi)
+    status = await aptController.identifyDevice()
+    console.log(' identify status = ' + status)
 
     let currentPosition = 0
-    status = await ftdi.requestStatusPzMot()
-    //console.log('requeststatus status = ' + status)
+    status = await aptController.requestStatusPzMot()
+    console.log('requeststatus status = ' + status)
     await wait(500)
     // const ftGetStatusResult = await ftdi.getMessage()
     // if (ftGetStatusResult.isUpdate)
     // {
     //   currentPosition == ftGetStatusResult.position
     // }
-    const messageResult = await getMessageResult(ftdi)
+    const messageResult = await getMessageResult(aptController)
     if (messageResult.messageType === apttypes.APT_PZMOT_GET_STATUS_UPDATE)
       currentPosition = messageResult.data.position
-    //console.log('currentPosition is ' + currentPosition )
-    return { ftdi: ftdi,
+    console.log('currentPosition is ' + currentPosition )
+    return { apt: aptController,
       device: {serialNo: deviceInfo.serialNumber, description: deviceInfo.description, productCode: 'XYZ',currentPosition : currentPosition, connected : true, targetPosition : 0 }}
   }
   else {

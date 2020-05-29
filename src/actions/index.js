@@ -28,11 +28,11 @@ const createSelectingDevice = (serialNo)=> {
   }
 }
 
-const createDeviceConnected = (device, ftdiHandle)=> {
+const createDeviceConnected = (device, apt)=> {
   return {
     type: types.DEVICE_CONNECTED,
     device: device,
-    ftdiHandle : ftdiHandle
+    aptHandle : apt
   }
 }
 
@@ -86,9 +86,9 @@ export const onTargetPositionChanged = (targetPosition) => {
 export const onSendToDevice = () => {
   return async ( dispatch, getState ) => {
     dispatch(createSendToDevice())
-    const ftdi = getState().deviceReducer.ftdiHandle
+    const apt = getState().deviceReducer.aptHandle
     const targetPosition = getState().deviceReducer.device.targetPosition
-    const ftStatus = await ftdi.setMoveAbsolutePzMot(targetPosition)
+    const ftStatus = await apt.setMoveAbsolutePzMot(targetPosition)
     //console.log('set position status returned' + ftStatus)
   }
 
@@ -101,14 +101,14 @@ export const onDeviceInfoListItemClicked = (serialNo) => {
   return dispatch => {
     dispatch(createSelectingDevice(serialNo))
     openDevice(serialNo)
-    .then(obj => {dispatch(createDeviceConnected(obj.device, obj.ftdi))
-                    onOpenDeviceSuccesfull(obj.ftdi, dispatch)} , obj => {/*todo open device error*/} )
+    .then(obj => {dispatch(createDeviceConnected(obj.device, obj.apt))
+                    onOpenDeviceSuccesfull(obj.apt, dispatch)} , obj => {/*todo open device error*/} )
   }
 }
 
-const onOpenDeviceSuccesfull = (ftdi, dispatch) => {
-    requestStatusTimer = setInterval(() => {ftdi.requestStatusPzMot()},250)
-    getStatusTimer = setInterval(()=>{getDeviceStatus(ftdi, dispatch)},250)
+const onOpenDeviceSuccesfull = (apt, dispatch) => {
+    requestStatusTimer = setInterval(() => {apt.requestStatusPzMot()},250)
+    getStatusTimer = setInterval(()=>{getDeviceStatus(apt, dispatch)},250)
 }
 //These functions have a dependency on being connected to the store (i.e. being enlisted in the connect method)
 //Redux thunk populates the returned function with the dispatch and getstate
@@ -118,11 +118,10 @@ export const onDisconnect =  () => {
   if (getStatusTimer)
     clearInterval(getStatusTimer)
   return async (dispatch, getState) => {
-    const fH = getState().deviceReducer.ftdiHandle
-    console.log('fH is' + fH)
-    if (fH)
+    const apt = getState().deviceReducer.aptHandle
+    if (apt)
     {
-      const ftStatus = await fH.close()
+      const ftStatus = await apt.close()
       console.log('close status is' + ftStatus)
       //TODO get rid of magic number import FT_STATUS
       if (ftStatus === 0)
