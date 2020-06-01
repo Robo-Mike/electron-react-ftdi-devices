@@ -16,6 +16,15 @@ let FTD2XX = window.require('n-ftdi')
 //compare contrast explicit promise against async method style
 
 export const getDeviceInfoList = async  () => {
+
+  const iVID = 0x0403
+  const iPID = 0xfaf0
+  if (! (process.platform === 'win32'))
+  {
+    //!process.platform==='win32'
+    // Would need to call multiple times with each VID/PID  used
+    console.log('set vidpid result is' + await FTD2XX.FTDI.setVIdPId(iVID, iPID))
+  }
   //uncomment to rebuild and kick program into life
   console.log('in get device info list ')
   const myList = await FTD2XX.FTDI.getDeviceList()
