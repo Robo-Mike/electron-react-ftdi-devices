@@ -95,8 +95,6 @@ let FT_STATUS = window.require('n-ftdi').FT_STATUS
 
   }
 
-}//Class aPT
+}//Class controller
 
-module.exports = {
-  Controller
-}
+export default Controller

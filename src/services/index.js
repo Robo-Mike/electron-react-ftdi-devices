@@ -3,7 +3,8 @@ import {wait} from '../utils/utils.js'
 import * as apttypes from './aptconstants.js'
 //mix of require and imports yeuch note import doesnt work for ftdi addon module
 //import * as FTD2XX from 'n-ftdi'
-let APT = require ('./apt.js')
+//let APT = require ('./apt.js')
+import Controller from './apt.js'
 let FTD2XX = window.require('n-ftdi')
 
 
@@ -66,7 +67,7 @@ export const openDevice = async (serialNo) => {
     //TODO too much going on here  without involving reducer I think
     console.log ('getting device info' )
     const deviceInfo = await  ftdi.getDeviceInfo()
-    const aptController = new APT.Controller(ftdi)
+    const aptController = new Controller(ftdi)
     status = await aptController.identifyDevice()
     console.log(' identify status = ' + status)
 
