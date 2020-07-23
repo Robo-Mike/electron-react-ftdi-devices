@@ -1,0 +1,33 @@
+setting up ubuntu(linux)
+
+apt install nodejs
+apt install npm
+
+Node "AddOn" requirements (for n-ftdi):
+
+sudo npm install -g node-gyp
+install python 2.7 - https://tecadmin.net/install-python-2-7-on-ubuntu-and-linuxmint/
+
+
+
+FTDI driver requirements
+
+Install FTDI on linux drivers using instructions at
+https://www.ftdichip.com/Drivers/D2XX/Linux/ReadMe-linux.txt - 
+
+Have to be built on linux machine and copied to appropriate location 
+I used the examples sub folder code (from the .tar download) to test installio on linux, specifically the SetVIDPID folder (I've added as a Repo on github)
+
+For the drivers to work with our devices  you have to set the VID and the PID in the calling code.
+Also by default the in built VCP driver (ftdi_sio) will take control of the ftdi device making it invisible to the D2XX ftdi driver.  This can be fixed by adding a "udev" rules file which unloads the VCP driver based on our PID and VID  (file 80-ftdi-sio.rules contained in this folder needs to be placed in /etc/udev/rules.d/ on unix box).
+
+Additional info
+https://linuxconfig.org/tutorial-on-how-to-write-basic-udev-rules-in-linux
+https://stackoverflow.com/questions/33981056/ftdi-d2xx-conflict-with-ftdi-sio-on-linux-how-to-remove-ftdi-sio-automatically/34065823
+https://www.elektormagazine.de/news/ftdi-d2xx-and-linux-overcoming-the-big-problem-
+
+
+There is also a script at https://github.com/thomaschaaf/node-ftdi/blob/master/install.sh which could be modified
+
+
+	
